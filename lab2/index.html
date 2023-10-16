@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Petey Fan Page</title>
+</head>
+<body>
+    Explore more about Ms. Petey:
+    <form action="/cgi-bin/form_handler.py" method="post">
+        Tell us more about you:
+        <br>
+        Your Name: <input type="text" name="username">
+        Your Location: <input type="text" name="location">
+        <br>
+        Choose your favorite Ms. Petey song:
+        <select name="song">
+            <option value="Greatest Hits">Greatest Hits</option>
+            <option value="All About Love">All About Love</option>
+            <option value="Memories">Memories</option>
+        </select>
+        <br>
+        What's your favorite part about Ms. Petey?
+        <br>
+        <input type="checkbox" name="Lyrics" value="on"> Lyrics
+        <input type="checkbox" name="Concerts" value="on"> Concerts
+        <input type="checkbox" name="Interviews" value="on"> Interviews
+        <input type="checkbox" name="Merchandise" value="on"> Merchandise
+        <br>
+        <input type="submit" value="Explore">
+        <input type="submit" name="delete_cookies" value="Delete Cookies">
+    </form>
+</body>
+</html>
