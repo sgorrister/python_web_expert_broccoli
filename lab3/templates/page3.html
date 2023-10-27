@@ -10,9 +10,14 @@
 {% block title %}Сторінка 3{% endblock %}
 
 {% block content %}
-    <h1>Сторінка 3</h1>
-    <p>Контент сторінки 3.</p>
-    <img src="{{ url_for('static', filename='images/image3.jpg') }}" alt="Зображення 3">
+     <h1>Контакти</h1>
+    <p>Я завжди готовий спілкуватися. Зв'яжіться зі мною за допомогою:</p>
+    <ul>
+        <li>Email: [ваш email]</li>
+        <li>Телефон: [ваш номер телефону]</li>
+        <li>Соціальні мережі: [посилання на ваші профілі]</li>
+    </ul>
+    <img src="{{ url_for('static', filename='images/me2.jpg') }}" alt="Зображення 3">
 {% endblock %}
 
 </body>

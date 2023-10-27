@@ -10,9 +10,10 @@
 {% block title %}Сторінка 1{% endblock %}
 
 {% block content %}
-    <h1>Сторінка 1</h1>
-    <p>Контент сторінки 1.</p>
-    <img src="{{ url_for('static', filename='images/image1.jpg') }}" alt="Зображення 1">
+ <h1>Про мене</h1>
+    <p>Привіт! Мене звуть [Ваше ім'я]. Я [додайте опис про себе].</p>
+    <p>Я маю досвід у розробці веб-додатків з використанням Python та Flask.</p>
+    <img src="{{ url_for('static', filename='images/me.jpg') }}" alt="Моя фотографія">
 {% endblock %}
 
 
