@@ -1,0 +1,26 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Default Title{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('home') }}">Головна</a></li>
+            <li><a href="{{ url_for('page1') }}">Сторінка 1</a></li>
+            <li><a href="{{ url_for('page2') }}">Сторінка 2</a></li>
+            <li><a href="{{ url_for('page3') }}">Сторінка 3</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        Операційна система: {{ os_info }}<br>
+        User Agent: {{ user_agent }}<br>
+        Поточний час: {{ current_time }}
+    </footer>
+</body>
+</html>

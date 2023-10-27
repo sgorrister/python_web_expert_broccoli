@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Сторінка 3{% endblock %}
+
+{% block content %}
+    <h1>Сторінка 3</h1>
+    <p>Контент сторінки 3.</p>
+    <img src="{{ url_for('static', filename='images/image3.jpg') }}" alt="Зображення 3">
+{% endblock %}
+
+</body>
+</html>
