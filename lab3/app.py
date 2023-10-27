@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import platform
 from datetime import datetime
 
@@ -34,12 +34,20 @@ def page3():
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
 
-@app.route('/skills')
+@app.route('/skills', methods=['GET', 'POST'])
+def display_skills():
+    if request.method == 'POST':
+        skill_name = request.form.get('skill_name')
+        for i, skill in enumerate(my_skills):
+            if skill_name.lower() in skill.lower():
+                return redirect(url_for('display_skill', id=i))
+        return "Навичка не знайдена."
+
+    return render_template('skills.html', my_skills=my_skills)
+
 @app.route('/skills/<int:id>')
-def display_skills(id=None):
-    if id is None:
-        return f"Всі навички: {', '.join(my_skills)}<br>Загальна кількість: {len(my_skills)}"
-    elif 0 <= id < len(my_skills):
+def display_skill(id):
+    if 0 <= id < len(my_skills):
         return f"Навичка з id {id}: {my_skills[id]}"
     else:
         return "Навичка не знайдена."
