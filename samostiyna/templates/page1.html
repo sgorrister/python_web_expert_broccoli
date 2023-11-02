@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Сторінка 1{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1>Про мене</h1>
+    <p>Привіт! Мене звуть [Ваше ім'я]. Я [додайте опис про себе].</p>
+    <p>Я маю досвід у розробці веб-додатків з використанням Python та Flask.</p>
+    <img id="about-image" src="{{ url_for('static', filename='images/me.jpg') }}" alt="Моя фотографія">
+</div>
+{% endblock %}
+
+
+
+
+</body>
+</html>
