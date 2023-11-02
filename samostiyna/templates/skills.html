@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Skills{% endblock %}
+
+{% block content %}
+    <h1>Навички</h1>
+    <p>Тут ви можете знайти мої навички та уміння.</p>
+    <ul>
+        {% if my_skills %}
+            {% for my_skill in my_skills %}
+                <li>{{ my_skill }}</li>
+            {% endfor %}
+        {% else %}
+            {% if skill %}
+                <li>{{ skill }}</li>
+            {% else %}
+                <h2> НАВИЧКУ НЕ ЗНАЙДЕно </h2>
+            {% endif %}
+        {% endif %}
+    </ul>
+
+    <h2>Пошук навичок</h2>
+    <form action="{{ url_for('display_skills') }}" method="get">
+        <div class="form-group">
+            <input type="text" name="skill_name" placeholder="Назва навички" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Пошук</button>
+    </form>
+    </div>
+{% endblock %}

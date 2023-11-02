@@ -1,0 +1,65 @@
+#about-image {
+    float: right;
+    margin: 0 0 10px 10px;
+    max-width: 300px;
+}
+
+.project-image {
+    max-width: 150px;
+    margin: 0 0 10px 10px;
+
+}
+
+#contact-image {
+    float: right;
+    margin: 0 0 10px 10px;
+    max-width: 200px;
+}
+body {
+    background-color: #ff6ec7;
+    color: #fff;
+}
+
+.navbar {
+    background-color: #ff3d74;
+    color: #fff;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    animation: pulse 2s infinite;
+}
+
+/* Зворотний текст */
+@keyframes flip {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+    100% { transform: rotateY(0deg); }
+}
+
+.footer {
+    animation: flip 3s infinite;
+}
+
+/* Анімація для фотографій */
+img {
+    transition: transform 0.3s ease-in-out;
+}
+
+img:hover {
+    transform: scale(1.2);
+}
+
+#about-image {
+    border: 2px solid #fff;
+    padding: 5px;
+}
+
+#contact-image {
+    border: 2px solid #fff;
+    padding: 5px;
+}

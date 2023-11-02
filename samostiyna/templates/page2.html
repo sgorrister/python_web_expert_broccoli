@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Сторінка 2{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1>Проекти</h1>
+    <p>Ось деякі з моїх проектів:</p>
+    <ul>
+        <li>Проєкт 1: [назва проєкту 1] <img class="project-image" src="{{ url_for('static', filename='images/p1.png') }}" alt="p1"> </li>
+        <li>Проєкт 2: [назва проєкту 2] <img class="project-image" src="{{ url_for('static', filename='images/p2.png') }}" alt="p2"> </li>
+        <li>Проєкт 3: [назва проєкту 3] <img class="project-image" src="{{ url_for('static', filename='images/p3.png') }}" alt="p1"> </li>
+
+    </ul>
+</div>
+{% endblock %}
+
+
+</body>
+</html>
