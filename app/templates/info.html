@@ -3,5 +3,11 @@
 {% block title %}Інфо{% endblock %}
 
 {% block content %}
-    <h2>Welcome to the Info page {{username}}!</h2>
+<h2>Welcome to the Info page {{username}}!</h2>
+<form method="post" action="{{ url_for('login') }}">
+    <input type="submit" name="logout_button" value="Вийти">
+</form>
+
+
+
 {% endblock %}

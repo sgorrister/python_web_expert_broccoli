@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from os.path import join, dirname, realpath
 
 from app import app
@@ -48,6 +48,10 @@ def page3():
 
 @app.route('/skills', methods=['GET', 'POST'])
 def display_skills():
+    os_info = platform.platform()
+    user_agent = request.headers.get('User-Agent')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     if request.method == 'POST':
         skill_name = request.form.get('skill_name')
         for i, skill in enumerate(my_skills):
@@ -55,11 +59,14 @@ def display_skills():
                 return redirect(url_for('display_skill', id=i))
         return "Навичка не знайдена."
 
-    return render_template('skills.html', my_skills=my_skills)
+    return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent, current_time=current_time)
 
 
 @app.route('/skills/<int:id>')
 def display_skill(id):
+    os_info = platform.platform()
+    user_agent = request.headers.get('User-Agent')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if 0 <= id < len(my_skills):
         return f"Навичка з id {id}: {my_skills[id]}"
     else:
@@ -68,25 +75,33 @@ def display_skill(id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    os_info = platform.platform()
+    user_agent = request.headers.get('User-Agent')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
 
         if username in users_data and users_data[username]['password'] == password:
-            return redirect(url_for('info',username=username))
+            session['username'] = username  # Збереження ім'я користувача в сесії
+            return redirect(url_for('info', username=username))
         else:
             error = 'Невірне ім\'я користувача або пароль'
             return render_template('login.html', error=error)
 
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template('login.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
 
 
-@app.route('/info/<username>')
+@app.route('/info/<username>', methods=['GET', 'POST'])
 def info(username):
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('info.html',username=username,os_info=os_info, user_agent=user_agent, current_time=current_time)
+
+    if request.method == 'POST' and request.form.get('logout_button'):
+        session.pop('username', None)
+        return redirect(url_for('login'))
+
+    return render_template('info.html', username=username, os_info=os_info, user_agent=user_agent,
+                           current_time=current_time)
