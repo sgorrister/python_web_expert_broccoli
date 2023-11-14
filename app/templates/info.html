@@ -10,9 +10,63 @@
             </div>
             <div class="card-body">
                 <p class="lead">Тут ви можете отримати інформацію та вийти з системи.</p>
-                <form method="post" action="{{ url_for('login') }}">
-                    <button type="submit" class="btn btn-danger">Вийти</button>
+                <form method="post" action="{{ url_for('info', username=username) }}">
+                    <button type="submit" name="logout_button" class="btn btn-danger">Вийти</button>
                 </form>
+
+                <form method="post" action="{{ url_for('info', username=username) }}">
+                    <div class="mb-3">
+                        <label for="cookie_key" class="form-label">Ключ кукі:</label>
+                        <input type="text" class="form-control" id="cookie_key" name="cookie_key" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cookie_value" class="form-label">Значення кукі:</label>
+                        <input type="text" class="form-control" id="cookie_value" name="cookie_value" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="expire_time" class="form-label">Термін дії (сек):</label>
+                        <input type="number" class="form-control" id="expire_time" name="expire_time" required>
+                    </div>
+                    <button type="submit" name="add_cookie_button" class="btn btn-success">Додати кукі</button>
+                </form>
+
+                <form method="post" action="{{ url_for('info', username=username) }}">
+                    <div class="mb-3">
+                        <label for="key_to_remove" class="form-label">Ключ кукі для видалення:</label>
+                        <input type="text" class="form-control" id="key_to_remove" name="key_to_remove" required>
+                    </div>
+                    <button type="submit" name="remove_cookie_button" class="btn btn-warning">Видалити кукі за ключем</button>
+                </form>
+
+                <form method="post" action="{{ url_for('info', username=username) }}">
+                    <button type="submit" name="remove_all_cookies_button" class="btn btn-danger">Видалити всі кукі</button>
+                </form>
+            </div>
+                <div class="mt-4">
+                    <h3>Список всіх кукі:</h3>
+                    {% if current_cookies %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Ключ</th>
+                                    <th scope="col">Значення</th>
+                                    <th scope="col">Термін дії</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in current_cookies %}
+                                    <tr>
+                                        <td>{{ key }}</td>
+                                        <td>{{ value }}</td>
+                                        <td>{{ expire_time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Немає збережених кукі.</p>
+                    {% endif %}
+                </div>
             </div>
             <div class="card-footer text-muted">
                 © Прикарпатський національний університет імені Василя Стефаника
