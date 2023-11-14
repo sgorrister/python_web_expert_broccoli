@@ -85,7 +85,7 @@ def login():
         password = request.form.get('password')
 
         if username in users_data and users_data[username]['password'] == password:
-            session['username'] = username  # Збереження ім'я користувача в сесії
+            session['username'] = username
             return redirect(url_for('info', username=username))
         else:
             error = 'Невірне ім\'я користувача або пароль'
@@ -132,7 +132,6 @@ def info(username):
                            current_time=current_time, current_cookies=current_cookies)
 @app.route('/logout', methods=['POST'])
 def logout():
-    # Видалення інформації про користувача з сесії
     session.pop('username', None)
     return redirect(url_for('login'))
 
@@ -140,18 +139,13 @@ def logout():
 @app.route('/change_password/<username>', methods=['POST'])
 def change_password(username):
     if 'username' in session and session['username'] == username:
-        # Assuming users_data is a global dictionary containing user data
         if request.method == 'POST':
             new_password = request.form.get('new_password')
-            # Update the password in your users_data dictionary
             users_data[username]['password'] = new_password
 
-            # Save the updated users_data dictionary to your file or database
             with open(dataJsonPath, 'w') as f:
                 json.dump(users_data, f, indent=2)
 
-            # Redirect to the info page with the updated password
             return redirect(url_for('info', username=username))
 
-    # If the user is not logged in or does not match the username, redirect to login
     return redirect(url_for('login'))
