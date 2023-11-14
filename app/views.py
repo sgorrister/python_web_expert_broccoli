@@ -130,3 +130,16 @@ def info(username):
 
     return render_template('info.html', username=username, os_info=os_info, user_agent=user_agent,
                            current_time=current_time, current_cookies=current_cookies)
+@app.route('/logout', methods=['POST'])
+def logout():
+    # Видалення інформації про користувача з сесії
+    session.pop('username', None)
+    return redirect(url_for('login'))
+@app.route('/change_password/<username>', methods=['POST'])
+def change_password(username):
+    if 'username' in session and session['username'] == username:
+        new_password = request.form.get('new_password')
+
+        return redirect(url_for('info', username=username))
+    else:
+        return redirect(url_for('login'))
