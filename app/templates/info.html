@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Info</title>
-</head>
-<body>
-    <h2>Welcome to the Info page, {{ username }}!</h2>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Інфо{% endblock %}
+
+{% block content %}
+    <h2>Welcome to the Info page {{username}}!</h2>
+{% endblock %}
