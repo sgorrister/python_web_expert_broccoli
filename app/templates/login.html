@@ -1,17 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}Сторінка 1{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
+    <h2>Login</h2>
     {% if error %}
         <p style="color: red;">{{ error }}</p>
     {% endif %}
-   <form method="post" action="{{ url_for('login') }}">
-    <label for="username">Ім'я користувача:</label>
-    <input type="text" id="username" name="username" required>
-    <label for="password">Пароль:</label>
-    <input type="password" id="password" name="password" required>
-    <input type="submit" value="Увійти">
-</form>
+    <form method="post" action="{{ url_for('login') }}" class="mt-4">
+        <div class="mb-3">
+            <label for="username" class="form-label">Ім'я користувача:</label>
+            <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Пароль:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Увійти</button>
+    </form>
 {% endblock %}
