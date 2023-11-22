@@ -48,7 +48,8 @@ def page2():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time, navigation=navigation)
+    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           navigation=navigation)
 
 
 @app.route('/page3')
@@ -56,7 +57,8 @@ def page3():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time, navigation=navigation)
+    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           navigation=navigation)
 
 
 @app.route('/skills', methods=['GET', 'POST'])
@@ -69,8 +71,10 @@ def display_skills():
         skill_name = request.form.get('skill_name')
         for i, skill in enumerate(my_skills):
             if skill_name.lower() in skill.lower():
+                flash(f"Навичка '{skill}' знайдена!", 'success')
                 return redirect(url_for('display_skill', id=i))
-        return "Навичка не знайдена."
+
+        flash("Навичка не знайдена.", 'danger')
 
     return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent,
                            current_time=current_time, navigation=navigation)
@@ -183,6 +187,7 @@ def change_password(username):
             with open(dataJsonPath, 'w') as f:
                 json.dump(users_data, f, indent=2)
 
+            flash('Пароль успішно змінено!', 'success')
             return redirect(url_for('info', username=username))
 
     return redirect(url_for('login'))
