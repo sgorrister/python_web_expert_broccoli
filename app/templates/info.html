@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Інфо{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0 display-4">Ласкаво просимо до сторінки Інфо, {{ username }}!</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead">Тут ви можете отримати інформацію та вийти з системи.</p>
+
+            <form method="post" action="{{ url_for('login') }}">
+                <button type="submit" class="btn btn-danger">Вийти</button>
+            </form>
+
+            <form method="post" action="{{ url_for('info', username=username) }}" class="mt-4">
+                <h3>Додати кукі:</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="cookie_key" class="form-label">Ключ кукі:</label>
+                            <input type="text" class="form-control" id="cookie_key" name="cookie_key" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="cookie_value" class="form-label">Значення кукі:</label>
+                            <input type="text" class="form-control" id="cookie_value" name="cookie_value" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="expire_time" class="form-label">Термін дії (сек):</label>
+                            <input type="number" class="form-control" id="expire_time" name="expire_time" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" name="add_cookie_button" class="btn btn-success">Додати кукі</button>
+            </form>
+
+            <form method="post" action="{{ url_for('info', username=username) }}" class="mt-4">
+                <h3>Видалити кукі за ключем:</h3>
+                <div class="mb-3">
+                    <label for="key_to_remove" class="form-label">Ключ кукі для видалення:</label>
+                    <input type="text" class="form-control" id="key_to_remove" name="key_to_remove" required>
+                </div>
+                <button type="submit" name="remove_cookie_button" class="btn btn-warning">Видалити кукі за ключем</button>
+            </form>
+
+            <form method="post" action="{{ url_for('info', username=username) }}" class="mt-4">
+                <h3>Видалити всі кукі:</h3>
+                <button type="submit" name="remove_all_cookies_button" class="btn btn-danger">Видалити всі кукі</button>
+            </form>
+
+            <div class="mt-4">
+                <h3>Список всіх кукі:</h3>
+                {% if current_cookies %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ключ</th>
+                            <th scope="col">Значення</th>
+                            <th scope="col">Термін дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in current_cookies %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                            <td>{{ expire_time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Немає збережених кукі.</p>
+                {% endif %}
+            </div>
+
+            <form method="post" action="{{ url_for('change_password', username=username) }}" class="mt-4">
+                <h3>Змінити пароль:</h3>
+                <div class="mb-3">
+                    <label for="new_password" class="form-label">Новий пароль:</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Змінити пароль</button>
+            </form>
+        </div>
+        <div class="card-footer text-muted mt-4">
+            © Прикарпатський національний університет імені Василя Стефаника
+            Тел. (0342) 75-23-51, E-mail: office@pnu.edu.ua
+        </div>
+    </div>
+</div>
+{% endblock %}
