@@ -1,15 +1,22 @@
 import json
 
-from flask import Flask, render_template, request, redirect, url_for, session, request, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, request, make_response, flash
 
 from os.path import join, dirname, realpath
 
 from app import app
 import platform
 from datetime import datetime
+from .forms import LoginForm, ChangePasswordForm
 
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
-
+navigation = {
+    'Про мене': 'home',
+    'Проєкти': 'page2',
+    'Контакти': 'page3',
+    'Skills': 'display_skills',
+    'login': 'login'
+}
 dataJsonPath = join(dirname(realpath(__file__)), 'users.json')
 with open(dataJsonPath, 'r+') as f:
     users_data = json.load(f)
@@ -20,7 +27,10 @@ def home():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    username = None
+
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           username=username, is_home=True, navigation=navigation)
 
 
 @app.route('/page1')
@@ -28,7 +38,9 @@ def page1():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    username = None
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           username=username, is_home=True, navigation=navigation)
 
 
 @app.route('/page2')
@@ -36,7 +48,8 @@ def page2():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           navigation=navigation)
 
 
 @app.route('/page3')
@@ -44,7 +57,8 @@ def page3():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           navigation=navigation)
 
 
 @app.route('/skills', methods=['GET', 'POST'])
@@ -57,10 +71,13 @@ def display_skills():
         skill_name = request.form.get('skill_name')
         for i, skill in enumerate(my_skills):
             if skill_name.lower() in skill.lower():
+                flash(f"Навичка '{skill}' знайдена!", 'success')
                 return redirect(url_for('display_skill', id=i))
-        return "Навичка не знайдена."
 
-    return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent, current_time=current_time)
+        flash("Навичка не знайдена.", 'danger')
+
+    return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent,
+                           current_time=current_time, navigation=navigation)
 
 
 @app.route('/skills/<int:id>')
@@ -80,18 +97,26 @@ def login():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
 
         if username in users_data and users_data[username]['password'] == password:
-            session['username'] = username
-            return redirect(url_for('info', username=username))
-        else:
-            error = 'Невірне ім\'я користувача або пароль'
-            return render_template('login.html', error=error)
 
-    return render_template('login.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+            if form.remember.data:
+                session['username'] = username
+                flash('Ви успішно увійшли!', 'success')
+                return redirect(url_for('info', username=username))
+            else:
+                flash('Ви успішно увійшли але вас ніхто ніколи не згадає!', 'success')
+                return redirect(url_for('page1', username=username))
+        else:
+            flash('Невірне ім\'я користувача або пароль', 'danger')
+
+    return render_template('login.html', os_info=os_info, user_agent=user_agent,
+                           current_time=current_time, form=form, navigation=navigation)
 
 
 @app.route('/info/<username>', methods=['GET', 'POST'])
@@ -100,6 +125,7 @@ def info(username):
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_cookies = request.cookies.items()
+    change_password_form = ChangePasswordForm()
 
     if request.method == 'POST':
         if 'add_cookie_button' in request.form:
@@ -110,6 +136,7 @@ def info(username):
             if key and value and expire_time:
                 response = make_response(redirect(url_for('info', username=username)))
                 response.set_cookie(key, value, max_age=int(expire_time))
+                flash('Cookie додано успішно!', 'success')
                 return response
 
         elif 'remove_cookie_button' in request.form:
@@ -118,6 +145,7 @@ def info(username):
             if key_to_remove:
                 response = make_response(redirect(url_for('info', username=username)))
                 response.delete_cookie(key_to_remove)
+                flash('Cookie видалено успішно!', 'success')
                 return response
 
         elif 'remove_all_cookies_button' in request.form:
@@ -125,11 +153,24 @@ def info(username):
 
             for key, _ in current_cookies:
                 response.delete_cookie(key)
-
+                flash('Усі Cookie видалено успішно!', 'success')
             return response
 
+        if change_password_form.validate_on_submit():
+            new_password = change_password_form.new_password.data
+            users_data[username]['password'] = new_password
+
+            with open(dataJsonPath, 'w') as f:
+                json.dump(users_data, f, indent=2)
+
+            flash('Пароль успішно змінено!', 'success')
+            return redirect(url_for('info', username=username))
+
     return render_template('info.html', username=username, os_info=os_info, user_agent=user_agent,
-                           current_time=current_time, current_cookies=current_cookies)
+                           current_time=current_time, current_cookies=current_cookies,
+                           change_password_form=change_password_form, navigation=navigation)
+
+
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)
@@ -146,6 +187,7 @@ def change_password(username):
             with open(dataJsonPath, 'w') as f:
                 json.dump(users_data, f, indent=2)
 
+            flash('Пароль успішно змінено!', 'success')
             return redirect(url_for('info', username=username))
 
     return redirect(url_for('login'))

@@ -1,3 +1,4 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html>
 
@@ -8,31 +9,29 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('home') }}">Про мене</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('page2') }}">Проєкти</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('page3') }}">Контакти</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('display_skills') }}">Skills</a>
-            </li>
+    {% include 'navigation.html' %}
 
-        </ul>
-    </nav>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
-    <footer>
-        Операційна система: {{ os_info }}<br>
-        User Agent: {{ user_agent }}<br>
-        Поточний час: {{ current_time }}
-    </footer>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    {% if is_home %}
+        <footer>
+            Операційна система: {{ os_info }}<br>
+            User Agent: {{ user_agent }}<br>
+            Поточний час: {{ current_time }}
+        </footer>
+    {% endif %}
 </body>
 
 </html>
