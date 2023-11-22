@@ -22,7 +22,8 @@ def home():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     username = None
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username, is_home=True)
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           username=username, is_home=True)
 
 
 @app.route('/page1')
@@ -31,7 +32,8 @@ def page1():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     username = None
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username, is_home=True)
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
+                           username=username, is_home=True)
 
 
 @app.route('/page2')
@@ -63,7 +65,8 @@ def display_skills():
                 return redirect(url_for('display_skill', id=i))
         return "Навичка не знайдена."
 
-    return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent, current_time=current_time)
+    return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent,
+                           current_time=current_time)
 
 
 @app.route('/skills/<int:id>')
@@ -104,6 +107,7 @@ def login():
     return render_template('login.html', os_info=os_info, user_agent=user_agent,
                            current_time=current_time, form=form)
 
+
 @app.route('/info/<username>', methods=['GET', 'POST'])
 def info(username):
     os_info = platform.platform()
@@ -121,6 +125,7 @@ def info(username):
             if key and value and expire_time:
                 response = make_response(redirect(url_for('info', username=username)))
                 response.set_cookie(key, value, max_age=int(expire_time))
+                flash('Cookie додано успішно!', 'success')
                 return response
 
         elif 'remove_cookie_button' in request.form:
@@ -129,6 +134,7 @@ def info(username):
             if key_to_remove:
                 response = make_response(redirect(url_for('info', username=username)))
                 response.delete_cookie(key_to_remove)
+                flash('Cookie видалено успішно!', 'success')
                 return response
 
         elif 'remove_all_cookies_button' in request.form:
@@ -136,7 +142,7 @@ def info(username):
 
             for key, _ in current_cookies:
                 response.delete_cookie(key)
-
+                flash('Усі Cookie видалено успішно!', 'success')
             return response
 
         if change_password_form.validate_on_submit():
@@ -152,6 +158,8 @@ def info(username):
     return render_template('info.html', username=username, os_info=os_info, user_agent=user_agent,
                            current_time=current_time, current_cookies=current_cookies,
                            change_password_form=change_password_form)
+
+
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)
