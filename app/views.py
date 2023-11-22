@@ -1,12 +1,13 @@
 import json
 
-from flask import Flask, render_template, request, redirect, url_for, session, request, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, request, make_response, flash
 
 from os.path import join, dirname, realpath
 
 from app import app
 import platform
 from datetime import datetime
+from .forms import LoginForm
 
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
 
@@ -20,7 +21,8 @@ def home():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    username = None
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username)
 
 
 @app.route('/page1')
@@ -28,7 +30,8 @@ def page1():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    username = None
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username)
 
 
 @app.route('/page2')
@@ -80,19 +83,26 @@ def login():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
 
         if username in users_data and users_data[username]['password'] == password:
-            session['username'] = username
-            return redirect(url_for('info', username=username))
+
+            if form.remember.data:
+                session['username'] = username
+                flash('Ви успішно увійшли!', 'success')
+                return redirect(url_for('info', username=username))
+            else:
+                flash('Ви успішно увійшли але вас ніхто ніколи не згадає!', 'success')
+                return redirect(url_for('page1', username=username))
         else:
-            error = 'Невірне ім\'я користувача або пароль'
-            return render_template('login.html', error=error)
+            flash('Невірне ім\'я користувача або пароль', 'danger')
 
-    return render_template('login.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
-
+    return render_template('login.html', os_info=os_info, user_agent=user_agent,
+                           current_time=current_time, form=form)
 
 @app.route('/info/<username>', methods=['GET', 'POST'])
 def info(username):

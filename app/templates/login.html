@@ -4,17 +4,35 @@
 
 {% block content %}
     <h2>Login</h2>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <form method="post" action="{{ url_for('login') }}" class="mt-4">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('login') }}" class="mt-4" novalidate>
+        {{ form.csrf_token }}
         <div class="mb-3">
-            <label for="username" class="form-label">Ім'я користувача:</label>
-            <input type="text" id="username" name="username" class="form-control" required>
+            {{ form.username.label }}
+            {{ form.username(class="form-control", required=true) }}
+            {% if form.username.errors %}
+                <p class="text-danger">{{ form.username.errors[0] }}</p>
+            {% endif %}
         </div>
         <div class="mb-3">
-            <label for="password" class="form-label">Пароль:</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+            {{ form.password.label }}
+            {{ form.password(class="form-control", required=true) }}
+            {% if form.password.errors %}
+                <p class="text-danger">{{ form.password.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.remember(class="form-check-input") }}
+            {{ form.remember.label(class="form-check-label") }}
         </div>
         <button type="submit" class="btn btn-primary">Увійти</button>
     </form>

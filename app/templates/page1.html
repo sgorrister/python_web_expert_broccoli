@@ -5,7 +5,8 @@
 {% block content %}
 <div class="jumbotron">
     <h1>Про мене</h1>
-    <p>Привіт! Мене звуть [Ваше ім'я]. Я [додайте опис про себе].</p>
+
+    <p>Привіт  {% if username %} {{ username }} {% endif %}! Мене звуть [Ваше ім'я]. Я [додайте опис про себе].</p>
     <p>Я маю досвід у розробці веб-додатків з використанням Python та Flask.</p>
     <img id="about-image" src="{{ url_for('static', filename='images/me.jpg') }}" alt="Моя фотографія">
 </div>
