@@ -10,7 +10,13 @@ from datetime import datetime
 from .forms import LoginForm, ChangePasswordForm
 
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
-
+navigation = {
+    'Про мене': 'home',
+    'Проєкти': 'page2',
+    'Контакти': 'page3',
+    'Skills': 'display_skills',
+    'login': 'login'
+}
 dataJsonPath = join(dirname(realpath(__file__)), 'users.json')
 with open(dataJsonPath, 'r+') as f:
     users_data = json.load(f)
@@ -22,8 +28,9 @@ def home():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     username = None
+
     return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
-                           username=username, is_home=True)
+                           username=username, is_home=True, navigation=navigation)
 
 
 @app.route('/page1')
@@ -33,7 +40,7 @@ def page1():
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     username = None
     return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
-                           username=username, is_home=True)
+                           username=username, is_home=True, navigation=navigation)
 
 
 @app.route('/page2')
@@ -41,7 +48,7 @@ def page2():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time, navigation=navigation)
 
 
 @app.route('/page3')
@@ -49,7 +56,7 @@ def page3():
     os_info = platform.platform()
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time)
+    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time, navigation=navigation)
 
 
 @app.route('/skills', methods=['GET', 'POST'])
@@ -66,7 +73,7 @@ def display_skills():
         return "Навичка не знайдена."
 
     return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent,
-                           current_time=current_time)
+                           current_time=current_time, navigation=navigation)
 
 
 @app.route('/skills/<int:id>')
@@ -105,7 +112,7 @@ def login():
             flash('Невірне ім\'я користувача або пароль', 'danger')
 
     return render_template('login.html', os_info=os_info, user_agent=user_agent,
-                           current_time=current_time, form=form)
+                           current_time=current_time, form=form, navigation=navigation)
 
 
 @app.route('/info/<username>', methods=['GET', 'POST'])
@@ -157,7 +164,7 @@ def info(username):
 
     return render_template('info.html', username=username, os_info=os_info, user_agent=user_agent,
                            current_time=current_time, current_cookies=current_cookies,
-                           change_password_form=change_password_form)
+                           change_password_form=change_password_form, navigation=navigation)
 
 
 @app.route('/logout', methods=['POST'])
