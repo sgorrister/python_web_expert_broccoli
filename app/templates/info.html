@@ -46,7 +46,8 @@
                     <label for="key_to_remove" class="form-label">Ключ кукі для видалення:</label>
                     <input type="text" class="form-control" id="key_to_remove" name="key_to_remove" required>
                 </div>
-                <button type="submit" name="remove_cookie_button" class="btn btn-warning">Видалити кукі за ключем</button>
+                <button type="submit" name="remove_cookie_button" class="btn btn-warning">Видалити кукі за ключем
+                </button>
             </form>
 
             <form method="post" action="{{ url_for('info', username=username) }}" class="mt-4">
@@ -59,20 +60,20 @@
                 {% if current_cookies %}
                 <table class="table table-striped">
                     <thead>
-                        <tr>
-                            <th scope="col">Ключ</th>
-                            <th scope="col">Значення</th>
-                            <th scope="col">Термін дії</th>
-                        </tr>
+                    <tr>
+                        <th scope="col">Ключ</th>
+                        <th scope="col">Значення</th>
+                        <th scope="col">Термін дії</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {% for key, value in current_cookies %}
-                        <tr>
-                            <td>{{ key }}</td>
-                            <td>{{ value }}</td>
-                            <td>{{ expire_time }}</td>
-                        </tr>
-                        {% endfor %}
+                    {% for key, value in current_cookies %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                        <td>{{ expire_time }}</td>
+                    </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
                 {% else %}
@@ -80,14 +81,19 @@
                 {% endif %}
             </div>
 
-            <form method="post" action="{{ url_for('change_password', username=username) }}" class="mt-4">
-                <h3>Змінити пароль:</h3>
+            <h2>Change Password</h2>
+            <form method="post" action="{{ url_for('info', username=username) }}" novalidate>
+                {{ change_password_form.csrf_token }}
                 <div class="mb-3">
-                    <label for="new_password" class="form-label">Новий пароль:</label>
-                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                    {{ change_password_form.new_password.label }}
+                    {{ change_password_form.new_password(class="form-control", required=true) }}
+                    {% if change_password_form.new_password.errors %}
+                    <p class="text-danger">{{ change_password_form.new_password.errors[0] }}</p>
+                    {% endif %}
                 </div>
-                <button type="submit" class="btn btn-primary">Змінити пароль</button>
+                <button type="submit" class="btn btn-primary">Change Password</button>
             </form>
+
         </div>
         <div class="card-footer text-muted mt-4">
             © Прикарпатський національний університет імені Василя Стефаника

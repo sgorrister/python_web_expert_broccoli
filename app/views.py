@@ -7,7 +7,7 @@ from os.path import join, dirname, realpath
 from app import app
 import platform
 from datetime import datetime
-from .forms import LoginForm
+from .forms import LoginForm, ChangePasswordForm
 
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
 
@@ -110,6 +110,7 @@ def info(username):
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_cookies = request.cookies.items()
+    change_password_form = ChangePasswordForm()
 
     if request.method == 'POST':
         if 'add_cookie_button' in request.form:
@@ -138,8 +139,19 @@ def info(username):
 
             return response
 
+        if change_password_form.validate_on_submit():
+            new_password = change_password_form.new_password.data
+            users_data[username]['password'] = new_password
+
+            with open(dataJsonPath, 'w') as f:
+                json.dump(users_data, f, indent=2)
+
+            flash('Пароль успішно змінено!', 'success')
+            return redirect(url_for('info', username=username))
+
     return render_template('info.html', username=username, os_info=os_info, user_agent=user_agent,
-                           current_time=current_time, current_cookies=current_cookies)
+                           current_time=current_time, current_cookies=current_cookies,
+                           change_password_form=change_password_form)
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)
