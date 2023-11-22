@@ -55,7 +55,7 @@
                 <button type="submit" name="remove_all_cookies_button" class="btn btn-danger">Видалити всі кукі</button>
             </form>
 
-            <div class="mt-4">
+            <div class="mt-4 table-responsive">
                 <h3>Список всіх кукі:</h3>
                 {% if current_cookies %}
                 <table class="table table-striped">
@@ -80,6 +80,7 @@
                 <p>Немає збережених кукі.</p>
                 {% endif %}
             </div>
+
 
             <h2>Change Password</h2>
             <form method="post" action="{{ url_for('info', username=username) }}" novalidate>
