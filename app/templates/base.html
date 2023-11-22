@@ -38,11 +38,13 @@
         </ul>
     {% endif %}
 {% endwith %}
+{% if is_home %}
     <footer>
         Операційна система: {{ os_info }}<br>
         User Agent: {{ user_agent }}<br>
         Поточний час: {{ current_time }}
     </footer>
+{% endif %}
 
 </body>
 

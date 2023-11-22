@@ -22,7 +22,7 @@ def home():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     username = None
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username)
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username, is_home=True)
 
 
 @app.route('/page1')
@@ -31,7 +31,7 @@ def page1():
     user_agent = request.headers.get('User-Agent')
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     username = None
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username)
+    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time, username=username, is_home=True)
 
 
 @app.route('/page2')
