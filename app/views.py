@@ -1,13 +1,12 @@
 import json
-
-from flask import Flask, render_template, request, redirect, url_for, session, request, make_response, flash
-
-from os.path import join, dirname, realpath
-
-from app import app
 import platform
 from datetime import datetime
-from .forms import LoginForm, ChangePasswordForm
+from os.path import join, dirname, realpath
+
+from flask import render_template, redirect, url_for, session, request, make_response, flash
+
+from app import app, db
+from .forms import LoginForm, ChangePasswordForm, TodoForm
 from .models import Todo
 
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
@@ -16,7 +15,8 @@ navigation = {
     'Проєкти': 'page2',
     'Контакти': 'page3',
     'Skills': 'display_skills',
-    'login': 'login'
+    'login': 'login',
+    'todo': 'todos'
 }
 dataJsonPath = join(dirname(realpath(__file__)), 'users.json')
 with open(dataJsonPath, 'r+') as f:
@@ -171,6 +171,7 @@ def info(username):
                            current_time=current_time, current_cookies=current_cookies,
                            change_password_form=change_password_form, navigation=navigation)
 
+
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)
@@ -192,15 +193,18 @@ def change_password(username):
 
     return redirect(url_for('login'))
 
+
 @app.route('/todos')
 def todos():
     todos = Todo.query.all()
-    return render_template('todos.html', todos=todos)
+    return render_template('todos.html', todos=todos, navigation=navigation)
+
 
 @app.route('/todo/<int:todo_id>')
 def todo(todo_id):
     todo = Todo.query.get_or_404(todo_id)
-    return render_template('todo.html', todo=todo)
+    return render_template('todo.html', todo=todo, navigation=navigation)
+
 
 @app.route('/add_todo', methods=['GET', 'POST'])
 def add_todo():
@@ -215,7 +219,8 @@ def add_todo():
         flash('Todo added successfully!', 'success')
         return redirect(url_for('todos'))
 
-    return render_template('add_todo.html', form=form)
+    return render_template('add_todo.html', form=form, navigation=navigation)
+
 
 @app.route('/delete_todo/<int:todo_id>')
 def delete_todo(todo_id):
