@@ -4,11 +4,12 @@ from datetime import datetime
 from os.path import join, dirname, realpath
 
 from flask import render_template, redirect, url_for, session, request, make_response, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import app, db
 from .api import api_bp
-from .forms import LoginForm, ChangePasswordForm, TodoForm
-from .models import Todo
+from .forms import LoginForm, ChangePasswordForm, TodoForm, RegistrationForm
+from .models import Todo, User
 
 app.register_blueprint(api_bp)
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
@@ -94,32 +95,32 @@ def display_skill(id):
         return "Навичка не знайдена."
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    form = LoginForm()
-
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-
-        if username in users_data and users_data[username]['password'] == password:
-
-            if form.remember.data:
-                session['username'] = username
-                flash('Ви успішно увійшли!', 'success')
-                return redirect(url_for('info', username=username))
-            else:
-                flash('Ви успішно увійшли але вас ніхто ніколи не згадає!', 'success')
-                return redirect(url_for('page1', username=username))
-        else:
-            flash('Невірне ім\'я користувача або пароль', 'danger')
-
-    return render_template('login.html', os_info=os_info, user_agent=user_agent,
-                           current_time=current_time, form=form, navigation=navigation)
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     os_info = platform.platform()
+#     user_agent = request.headers.get('User-Agent')
+#     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#
+#     form = LoginForm()
+#
+#     if form.validate_on_submit():
+#         username = form.username.data
+#         password = form.password.data
+#
+#         if username in users_data and users_data[username]['password'] == password:
+#
+#             if form.remember.data:
+#                 session['username'] = username
+#                 flash('Ви успішно увійшли!', 'success')
+#                 return redirect(url_for('info', username=username))
+#             else:
+#                 flash('Ви успішно увійшли але вас ніхто ніколи не згадає!', 'success')
+#                 return redirect(url_for('page1', username=username))
+#         else:
+#             flash('Невірне ім\'я користувача або пароль', 'danger')
+#
+#     return render_template('login.html', os_info=os_info, user_agent=user_agent,
+#                            current_time=current_time, form=form, navigation=navigation)
 
 
 @app.route('/info/<username>', methods=['GET', 'POST'])
@@ -231,3 +232,34 @@ def delete_todo(todo_id):
     db.session.commit()
     flash('Todo deleted successfully!', 'success')
     return redirect(url_for('todos'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
+        new_user = User(username=form.username.data, email=form.email.data, password_hash=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Your account has been created!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html', title='Register', form=form, navigation=navigation)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+
+        if user and check_password_hash(user.password_hash, form.password.data):
+            flash('Login successful!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Login unsuccessful. Please check email and password.', 'danger')
+
+    return render_template('login.html', title='Login', form=form, navigation=navigation)
