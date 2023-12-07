@@ -6,9 +6,11 @@ from os.path import join, dirname, realpath
 from flask import render_template, redirect, url_for, session, request, make_response, flash
 
 from app import app, db
+from .api import api_bp
 from .forms import LoginForm, ChangePasswordForm, TodoForm
 from .models import Todo
 
+app.register_blueprint(api_bp)
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
 navigation = {
     'Про мене': 'home',
