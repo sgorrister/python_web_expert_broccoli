@@ -4,11 +4,11 @@ from datetime import datetime
 from os.path import join, dirname, realpath
 
 from flask import render_template, redirect, url_for, session, request, make_response, flash
-from flask_login import login_user
+from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 from app import app, db
-from .api import api_bp
+from app.api import api_bp
 from .forms import LoginForm, ChangePasswordForm, TodoForm, RegistrationForm
 from .models import Todo, User
 
@@ -19,9 +19,7 @@ navigation = {
     'Проєкти': 'page2',
     'Контакти': 'page3',
     'Skills': 'display_skills',
-    'login': 'login',
     'todo': 'todos',
-    'register': 'register',
     'all users': 'users'
 }
 dataJsonPath = join(dirname(realpath(__file__)), 'users.json')
@@ -178,10 +176,11 @@ def info(username):
                            change_password_form=change_password_form, navigation=navigation)
 
 
-@app.route('/logout', methods=['POST'])
+@app.route("/logout", methods=['GET', 'POST'])
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('login'))
+    logout_user()
+    flash('You have been logged out!', 'success')
+    return redirect(url_for('home'))
 
 
 @app.route('/change_password/<username>', methods=['POST'])
@@ -239,6 +238,9 @@ def delete_todo(todo_id):
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     form = RegistrationForm()
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -249,6 +251,8 @@ def register():
         new_user = User(username=form.username.data, email=form.email.data)
         new_user.set_password(form.password.data)
         db.session.add(new_user)
+        db.session.commit()
+
 
         try:
             db.session.commit()
@@ -281,3 +285,9 @@ def login():
 def users():
     users = User.query.all()
     return render_template('users.html', users=users, navigation=navigation)
+
+
+@app.route("/account")
+@login_required
+def account():
+    return render_template('account.html', title='Account', navigation=navigation)
