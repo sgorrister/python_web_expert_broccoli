@@ -20,7 +20,9 @@ navigation = {
     'Контакти': 'page3',
     'Skills': 'display_skills',
     'login': 'login',
-    'todo': 'todos'
+    'todo': 'todos',
+    'register': 'register',
+    'all users': 'users'
 }
 dataJsonPath = join(dirname(realpath(__file__)), 'users.json')
 with open(dataJsonPath, 'r+') as f:
