@@ -31,6 +31,9 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
+
 
 def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
