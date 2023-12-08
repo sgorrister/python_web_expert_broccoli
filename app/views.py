@@ -4,7 +4,8 @@ from datetime import datetime
 from os.path import join, dirname, realpath
 
 from flask import render_template, redirect, url_for, session, request, make_response, flash
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user
+from sqlalchemy.exc import IntegrityError
 
 from app import app, db
 from .api import api_bp
@@ -234,32 +235,47 @@ def delete_todo(todo_id):
     return redirect(url_for('todos'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
-        new_user = User(username=form.username.data, email=form.email.data, password_hash=hashed_password)
+        existing_user = User.query.filter_by(email=form.email.data).first()
+        if existing_user:
+            flash('Ця електронна адреса вже зайнята. Будь ласка, виберіть іншу.', 'danger')
+            return redirect(url_for('register'))
+
+        new_user = User(username=form.username.data, email=form.email.data)
+        new_user.set_password(form.password.data)
         db.session.add(new_user)
-        db.session.commit()
-        flash('Your account has been created!', 'success')
-        return redirect(url_for('login'))
+
+        try:
+            db.session.commit()
+            flash('Your account has been created!', 'success')
+            return redirect(url_for('login'))
+        except IntegrityError:
+            db.session.rollback()
+            flash('Помилка бази даних. Спробуйте ще раз.', 'danger')
+            return redirect(url_for('register'))
 
     return render_template('register.html', title='Register', form=form, navigation=navigation)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-
-        if user and check_password_hash(user.password_hash, form.password.data):
-            flash('Login successful!', 'success')
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            flash('Успішний вхід!', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Login unsuccessful. Please check email and password.', 'danger')
+            flash('Невірна електронна адреса або пароль. Спробуйте ще раз.', 'danger')
 
     return render_template('login.html', title='Login', form=form, navigation=navigation)
+
+
+@app.route('/users')
+def users():
+    users = User.query.all()
+    return render_template('users.html', users=users, navigation=navigation)
