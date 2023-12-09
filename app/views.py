@@ -11,8 +11,8 @@ from flask import render_template, redirect, url_for, session, request, make_res
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
-from app import app, db
-from app.api import api_bp
+from . import app, db
+from .api import api_bp
 from .forms import LoginForm, ChangePasswordForm, TodoForm, RegistrationForm, UpdateAccountForm, ResetPasswordForm
 from .models import Todo, User
 
@@ -336,3 +336,14 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form, reset_form=reset_form,
                            navigation=navigation)
+
+
+@app.after_request
+def after_request(response):
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now()
+        try:
+            db.session.commit()
+        except:
+            flash('Error while updating user last seen!', 'danger')
+    return response
