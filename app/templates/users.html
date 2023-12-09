@@ -3,9 +3,10 @@
 <h2>All Users</h2>
 {% if users %}
 <ul>
-  {% for user in users %}
-  <li>{{ user.username }}</li>
-  {% endfor %}
+    {% for user in users %}
+    <li>{{ user.username }}</li>
+    <p>Last seen: {{ user.last_seen }}</p>
+    {% endfor %}
 </ul>
 <p>Total Users: {{ users|length }}</p>
 {% else %}
