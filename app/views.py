@@ -331,6 +331,7 @@ def account():
         else:
             flash('Invalid password', 'danger')
     elif request.method == 'GET':
+        form.about_me.data = current_user.about_me
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
