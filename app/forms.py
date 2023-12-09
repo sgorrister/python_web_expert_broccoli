@@ -15,15 +15,16 @@ from app.models import User
 #     remember = BooleanField('Запам\'ятати мене')
 
 
-
 class ChangePasswordForm(FlaskForm):
     new_password = PasswordField('New Password', validators=[DataRequired()])
     submit = SubmitField('Change Password')
+
 
 class TodoForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description')
     submit = SubmitField('Add Todo')
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[
@@ -55,6 +56,9 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     about_me = TextAreaField('About me', validators=[Length(max=200)])
+    old_password = PasswordField('Old Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('new_password')])
     submit = SubmitField('Update')
 
     def validate_username(self, username):
@@ -68,6 +72,10 @@ class UpdateAccountForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
+
+    def validate_old_password(self, old_password):
+        if not current_user.check_password(old_password.data):
+            raise ValidationError('Invalid old password.')
 
 
 class ResetPasswordForm(FlaskForm):
