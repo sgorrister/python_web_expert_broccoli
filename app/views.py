@@ -1,15 +1,19 @@
 import json
+import os
 import platform
+import secrets
 from datetime import datetime
 from os.path import join, dirname, realpath
 
+from PIL import Image
+from flask import current_app
 from flask import render_template, redirect, url_for, session, request, make_response, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 from app import app, db
 from app.api import api_bp
-from .forms import LoginForm, ChangePasswordForm, TodoForm, RegistrationForm
+from .forms import LoginForm, ChangePasswordForm, TodoForm, RegistrationForm, UpdateAccountForm, ResetPasswordForm
 from .models import Todo, User
 
 app.register_blueprint(api_bp)
@@ -287,7 +291,47 @@ def users():
     return render_template('users.html', users=users, navigation=navigation)
 
 
-@app.route("/account")
+def save_picture(form_picture):
+    # Generate a random filename to avoid collisions
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+
+    # Save the resized image
+    picture_path = os.path.join(current_app.root_path, 'static/profile_pics', picture_fn)
+    output_size = (125, 125)
+    img = Image.open(form_picture)
+    img.thumbnail(output_size)
+    img.save(picture_path)
+
+    return picture_fn
+
+
+@app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('account.html', title='Account', navigation=navigation)
+    form = UpdateAccountForm()
+    reset_form = ResetPasswordForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('account'))
+    elif reset_form.validate_on_submit():
+        if current_user.check_password(reset_form.old_password.data):
+            current_user.set_password(reset_form.password.data)
+            db.session.commit()
+            flash('Your password has been reset!', 'success')
+            return redirect(url_for('account'))
+        else:
+            flash('Invalid password', 'danger')
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    return render_template('account.html', title='Account', image_file=image_file, form=form, reset_form=reset_form,
+                           navigation=navigation)
