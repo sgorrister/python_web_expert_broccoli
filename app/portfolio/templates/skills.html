@@ -20,7 +20,7 @@
     </ul>
 
     <h2>Пошук навичок</h2>
-    <form action="{{ url_for('display_skills') }}" method="get">
+<form action="{{ url_for('portfolio.display_skills') }}" method="post">
         <div class="form-group">
             <input type="text" name="skill_name" placeholder="Назва навички" class="form-control">
         </div>

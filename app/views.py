@@ -12,92 +12,20 @@ from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 from . import app, db
-from .api import api_bp
 from .forms import LoginForm, ChangePasswordForm, TodoForm, RegistrationForm, UpdateAccountForm, ResetPasswordForm
 from .models import Todo, User
 
-app.register_blueprint(api_bp)
-my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
 navigation = {
-    'Про мене': 'home',
-    'Проєкти': 'page2',
-    'Контакти': 'page3',
-    'Skills': 'display_skills',
+    'Про мене': 'portfolio.home',
+    'Проєкти': 'portfolio.page2',
+    'Контакти': 'portfolio.page3',
+    'Skills': 'portfolio.display_skills',
     'todo': 'todos',
     'all users': 'users'
 }
 dataJsonPath = join(dirname(realpath(__file__)), 'users.json')
 with open(dataJsonPath, 'r+') as f:
     users_data = json.load(f)
-
-
-@app.route('/')
-def home():
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    username = None
-
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
-                           username=username, is_home=True, navigation=navigation)
-
-
-@app.route('/page1')
-def page1():
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    username = None
-    return render_template('page1.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
-                           username=username, is_home=True, navigation=navigation)
-
-
-@app.route('/page2')
-def page2():
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page2.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
-                           navigation=navigation)
-
-
-@app.route('/page3')
-def page3():
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('page3.html', os_info=os_info, user_agent=user_agent, current_time=current_time,
-                           navigation=navigation)
-
-
-@app.route('/skills', methods=['GET', 'POST'])
-def display_skills():
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    if request.method == 'POST':
-        skill_name = request.form.get('skill_name')
-        for i, skill in enumerate(my_skills):
-            if skill_name.lower() in skill.lower():
-                flash(f"Навичка '{skill}' знайдена!", 'success')
-                return redirect(url_for('display_skill', id=i))
-
-        flash("Навичка не знайдена.", 'danger')
-
-    return render_template('skills.html', my_skills=my_skills, os_info=os_info, user_agent=user_agent,
-                           current_time=current_time, navigation=navigation)
-
-
-@app.route('/skills/<int:id>')
-def display_skill(id):
-    os_info = platform.platform()
-    user_agent = request.headers.get('User-Agent')
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    if 0 <= id < len(my_skills):
-        return f"Навичка з id {id}: {my_skills[id]}"
-    else:
-        return "Навичка не знайдена."
 
 
 # @app.route('/login', methods=['GET', 'POST'])
@@ -256,7 +184,6 @@ def register():
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
-
 
         try:
             db.session.commit()

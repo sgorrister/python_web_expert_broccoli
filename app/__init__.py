@@ -13,6 +13,16 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+with app.app_context():
+    from app.api import api_bp
+
+    app.register_blueprint(api_bp)
+
+    from app.portfolio import portfolio_bp
+
+    app.register_blueprint(portfolio_bp)
+
+
 from app import models, views, forms
 
 @login_manager.user_loader
