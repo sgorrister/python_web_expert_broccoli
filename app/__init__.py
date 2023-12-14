@@ -23,6 +23,12 @@ with app.app_context():
     from app.cookies import cookies_bp
     app.register_blueprint(cookies_bp)
 
+    from app.accounting import accounting_bp
+
+    app.register_blueprint(accounting_bp)
+
+
+
 from app import models, views, forms
 
 

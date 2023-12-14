@@ -17,17 +17,17 @@
         <ul class="navbar-nav">
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('account') }}">Мій профіль</a>
+                <a class="nav-link" href="{{ url_for('accounting.account') }}">Мій профіль</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">Вихід</a>
+                <a class="nav-link" href="{{ url_for('accounting.logout') }}">Вихід</a>
             </li>
             {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('register') }}">Реєстрація</a>
+                <a class="nav-link" href="{{ url_for('accounting.register') }}">Реєстрація</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('login') }}">Вхід</a>
+                <a class="nav-link" href="{{ url_for('accounting.login') }}">Вхід</a>
             </li>
             {% endif %}
         </ul>
