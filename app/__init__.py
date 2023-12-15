@@ -24,9 +24,15 @@ with app.app_context():
     app.register_blueprint(cookies_bp)
 
     from app.accounting import accounting_bp
-
     app.register_blueprint(accounting_bp)
 
+    from app.todos import todos_bp
+
+    app.register_blueprint(todos_bp)
+
+    from app.feedback import feedback_bp
+
+    app.register_blueprint(feedback_bp)
 
 
 from app import models, views, forms

@@ -1,5 +1,4 @@
 import os
-import os
 import secrets
 from datetime import datetime
 
@@ -20,7 +19,7 @@ navigation = {
     'Проєкти': 'portfolio.page2',
     'Контакти': 'portfolio.page3',
     'Skills': 'portfolio.display_skills',
-    'todo': 'todos',
+    'todo': 'todos.todos',
     'all users': 'accounting.users'
 }
 

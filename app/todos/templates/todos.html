@@ -6,8 +6,8 @@
   <h2>Todos</h2>
   <ul>
     {% for todo in todos %}
-      <li><a href="{{ url_for('todo', todo_id=todo.id) }}">{{ todo.title }}</a> - {{ todo.date_created }}</li>
+      <li><a href="{{ url_for('todos.todo', todo_id=todo.id) }}">{{ todo.title }}</a> - {{ todo.date_created }}</li>
     {% endfor %}
   </ul>
-  <a href="{{ url_for('add_todo') }}">Add Todo</a>
+<a href="{{ url_for('todos.add_todo') }}">Add Todo</a>
 {% endblock %}
