@@ -67,7 +67,7 @@ def register():
         try:
             db.session.commit()
             flash('Your account has been created!', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('accounting.login'))
         except IntegrityError:
             db.session.rollback()
             flash('Помилка бази даних. Спробуйте ще раз.', 'danger')
