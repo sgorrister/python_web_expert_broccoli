@@ -41,5 +41,18 @@ class User(UserMixin, db.Model):
         return f"User('{self.username}', '{self.email}')"
 
 
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    feedback_text = db.Column(db.Text, nullable=False)
+    liked = db.Column(db.Boolean, nullable=True, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, name, feedback_text, liked):
+        self.name = name
+        self.feedback_text = feedback_text
+        self.liked = liked
+
+
 def __repr__(self):
         return f"User('{self.username}', '{self.email}')"

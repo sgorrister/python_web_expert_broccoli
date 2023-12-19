@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Skills{% endblock %}
+
+{% block content %}
+
+<h1>Форма відгуку</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.name.label }}
+        {{ form.name(size=80) }}
+    </div>
+    <div>
+        {{ form.feedback_text.label }}
+        {{ form.feedback_text(cols=80, rows=10) }}
+    </div>
+    <div>
+        {{ form.liked.label }}
+        {{ form.liked }}
+    </div>
+
+    <div>
+        <button type="submit">Відправити</button>
+    </div>
+</form>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<h2>Всі відгуки</h2>
+<ul>
+    {% for feedback in feedbacks %}
+    <li><strong>{{ feedback.name }}</strong>: {{ feedback.feedback_text }}
+        | {% if feedback.liked %}
+        Вподобав сторінку
+        {% else %}
+        Розчарований сайтом (спалити)
+        {% endif %}
+        {% endfor %}
+</ul>
+
+{% endblock %}

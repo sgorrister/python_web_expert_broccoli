@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
 import platform
 from datetime import datetime
 
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -89,7 +89,7 @@ def feedback():
         db.session.commit()
 
         flash('Ваш відгук було збережено!', 'success')
-        return redirect(url_for('feedback'))
+        return redirect(url_for('feedback.feedback'))
 
 
     feedbacks = Feedback.query.all()
