@@ -12,7 +12,8 @@ navigation = {
     'Контакти': 'portfolio.page3',
     'Skills': 'portfolio.display_skills',
     'todo': 'todos.todos',
-    'all users': 'accounting.users'
+    'all users': 'accounting.users',
+    'feedback': 'feedback.feedback'
 }
 
 
