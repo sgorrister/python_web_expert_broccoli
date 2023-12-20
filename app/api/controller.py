@@ -1,9 +1,8 @@
 # app/api.py
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 
-from .models import Todo, db
-
-api_bp = Blueprint('api', __name__, url_prefix='/api')
+from ..models import Todo, db
+from . import api_bp
 
 
 @api_bp.route('/todos', methods=['GET'])
