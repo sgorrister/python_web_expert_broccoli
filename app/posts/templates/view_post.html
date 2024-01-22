@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ post.title }}</h2>
+  <p>{{ post.text }}</p>
+  <p>Created: {{ post.created }}</p>
+  <p>Type: {{ post.type.value }}</p>
+  <p>Enabled: {{ post.enabled }}</p>
+  {% if current_user.is_authenticated and current_user.id == post.user_id %}
+    <a href="{{ url_for('posts.update_post', id=post.id) }}">Edit</a>
+
+  {% endif %}
+{% endblock %}

@@ -38,6 +38,9 @@ def create_app(config_class=Config):
         from app.feedback import feedback_bp
         app.register_blueprint(feedback_bp)
 
+        from app.posts import posts_bp
+        app.register_blueprint(posts_bp)
+
         from app import models, views, forms
 
     return app
