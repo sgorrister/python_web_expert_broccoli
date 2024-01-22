@@ -43,6 +43,12 @@ def view_post(id):
 @login_required
 def update_post(id):
     post = Post.query.get_or_404(id)
+
+    # Check if the current user is the author of the post
+    if current_user.id != post.user_id:
+        flash('You are not authorized to edit this post.', 'danger')
+        return redirect(url_for('posts.list_posts'))
+
     form = PostForm()
     if form.validate_on_submit():
         post.title = form.title.data
@@ -53,16 +59,19 @@ def update_post(id):
     elif request.method == 'GET':
         form.title.data = post.title
         form.text.data = post.text
-    return render_template('update_post.html', title='Update Post', form=form, post=post, navigation=navigation)
+    return render_template('update_post.html', title='Update Post', form=form, navigation=navigation, post=post)
+
 @posts_bp.route("/post/<int:id>/delete", methods=['POST'])
 @login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
 
-    if request.method == 'POST':
-        db.session.delete(post)
-        db.session.commit()
-        flash('Post has been deleted!', 'success')
+    # Check if the current user is the author of the post
+    if current_user.id != post.user_id:
+        flash('You are not authorized to delete this post.', 'danger')
         return redirect(url_for('posts.list_posts'))
 
-    return redirect(url_for('posts.view_post', id=post.id))
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post has been deleted!', 'success')
+    return redirect(url_for('posts.list_posts'))
