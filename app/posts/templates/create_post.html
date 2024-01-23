@@ -13,7 +13,12 @@
       {{ form.text(class="form-control form-control-lg") }}
     </div>
     <div class="form-group">
+      {{ form.category.label(class="form-control-label") }}
+      {{ form.category(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
       {{ form.submit(class="btn btn-primary") }}
     </div>
+
   </form>
 {% endblock %}

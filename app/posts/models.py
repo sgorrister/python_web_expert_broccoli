@@ -4,8 +4,21 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Enum
 import enum
 from datetime import datetime
+from sqlalchemy import Table, ForeignKey
+from sqlalchemy.orm import relationship
 
+post_tag_association = db.Table(
+    'post_tag_association',
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+)
 
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f"<Tag {self.name}>"
 class EnumPriority(enum.Enum):
     low = 1
     medium = 2
@@ -27,6 +40,8 @@ class Post(db.Model):
     enabled = db.Column(db.Boolean, default=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    #category = db.relationship('Category', backref=db.backref('posts', lazy=True))
+    tags = relationship('Tag', secondary=post_tag_association, backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.created}')"
