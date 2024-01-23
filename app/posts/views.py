@@ -2,8 +2,10 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from . import posts_bp
 from .. import db
-from .models import Post
+from .models import Post, Category
 from .forms import PostForm
+from .forms import CategoryForm
+
 navigation = {
     'Про мене': 'portfolio.home',
     'Проєкти': 'portfolio.page2',
@@ -74,4 +76,39 @@ def delete_post(id):
     db.session.delete(post)
     db.session.commit()
     flash('Post has been deleted!', 'success')
+    return redirect(url_for('posts.list_posts'))
+
+@posts_bp.route("/category/create", methods=['GET', 'POST'])
+@login_required
+def create_category():
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category = Category(name=form.name.data)
+        db.session.add(category)
+        db.session.commit()
+        flash('Category has been created!', 'success')
+        return redirect(url_for('posts.list_posts'))
+    return render_template('create_category.html', title='Create Category', form=form, navigation=navigation)
+
+@posts_bp.route("/category/<int:id>/update", methods=['GET', 'POST'])
+@login_required
+def update_category(id):
+    category = Category.query.get_or_404(id)
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category.name = form.name.data
+        db.session.commit()
+        flash('Category has been updated!', 'success')
+        return redirect(url_for('posts.list_posts'))
+    elif request.method == 'GET':
+        form.name.data = category.name
+    return render_template('update_category.html', title='Update Category', form=form, navigation=navigation)
+
+@posts_bp.route("/category/<int:id>/delete", methods=['POST'])
+@login_required
+def delete_category(id):
+    category = Category.query.get_or_404(id)
+    db.session.delete(category)
+    db.session.commit()
+    flash('Category has been deleted!', 'success')
     return redirect(url_for('posts.list_posts'))
