@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Create Category</h2>
+  <form method="POST" action="{{ url_for('posts.create_category') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.name.label(class="form-control-label") }}
+      {{ form.name(class="form-control form-control-lg", placeholder="Enter category name") }}
+      {% if form.name.errors %}
+        <div class="alert alert-danger" role="alert">
+          {{ form.name.errors | join(', ') }}
+        </div>
+      {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Create Category</button>
+  </form>
+{% endblock %}

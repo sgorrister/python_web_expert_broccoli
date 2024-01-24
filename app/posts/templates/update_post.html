@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Edit Post</h2>
+  <form method="POST" action="{{ url_for('posts.update_post', id=post.id) }}" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.title.label(class="form-control-label") }}
+      {{ form.title(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
+      {{ form.text.label(class="form-control-label") }}
+      {{ form.text(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
+      {{ form.category.label(class="form-control-label") }}
+      {{ form.category(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
+      {{ form.tags.label(class="form-control-label") }}
+      {{ form.tags(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
