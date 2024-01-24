@@ -41,6 +41,9 @@ def create_app(config_class=Config):
         from app.posts import posts_bp
         app.register_blueprint(posts_bp)
 
+        from app.tests import tests_bp
+        app.register_blueprint(tests_bp)
+
         from app import models, views, forms
 
     return app
