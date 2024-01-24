@@ -17,6 +17,8 @@ navigation = {
     'all users': 'accounting.users',
     'feedback': 'feedback.feedback'
 }
+
+
 @posts_bp.route("/post/create", methods=['GET', 'POST'])
 @login_required
 def create_post():
@@ -51,9 +53,15 @@ def create_post():
 @posts_bp.route("/post", methods=['GET'])
 def list_posts():
     posts = Post.query.all()
+    sort_order = request.args.get('sort', 'desc')
     categories = Category.query.all()  # Added to pass categories to the template
+    if sort_order == 'asc':
+        posts = Post.query.options(joinedload(Post.category), joinedload(Post.tags)).order_by(Post.created)
+    else:
+        posts = Post.query.options(joinedload(Post.category), joinedload(Post.tags)).order_by(Post.created.desc())
+    return render_template('list_posts.html', title='List Posts', posts=posts, navigation=navigation,
+                           sort_order=sort_order)
 
-    return render_template('list_posts.html', title='List Posts', posts=posts, navigation=navigation)
 
 @posts_bp.route("/post/<int:id>", methods=['GET'])
 def view_post(id):
@@ -64,7 +72,7 @@ def view_post(id):
 @posts_bp.route("/post/<int:id>/update", methods=['GET', 'POST'])
 @login_required
 def update_post(id):
-    post = Post.query.options(joinedload(Post.category)).get_or_404(id)
+    post = Post.query.options(joinedload(Post.category), joinedload(Post.tags)).get_or_404(id)
 
     # Check if the current user is the author of the post
     if current_user.id != post.user_id:
@@ -78,6 +86,20 @@ def update_post(id):
         post.title = form.title.data
         post.text = form.text.data
         post.category_id = form.category.data
+
+        # Оновлення тегів
+        tags_input = form.tags.data
+        tags_list = [tag.strip()[1:] for tag in tags_input.split(',') if tag.strip().startswith('#')]
+        post_tags = []
+        for tag_name in tags_list:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+            post_tags.append(tag)
+
+        post.tags = post_tags  # Оновлення тегів
+
         db.session.commit()
         flash('Post has been updated!', 'success')
         return redirect(url_for('posts.list_posts'))
@@ -85,8 +107,11 @@ def update_post(id):
         form.title.data = post.title
         form.text.data = post.text
         form.category.data = post.category_id
+        # Задаємо теги для виведення в формі
+        form.tags.data = ', '.join(['#' + tag.name for tag in post.tags])
 
     return render_template('update_post.html', title='Update Post', form=form, navigation=navigation, post=post)
+
 @posts_bp.route("/post/<int:id>/delete", methods=['POST'])
 @login_required
 def delete_post(id):
@@ -102,6 +127,7 @@ def delete_post(id):
     flash('Post has been deleted!', 'success')
     return redirect(url_for('posts.list_posts'))
 
+
 @posts_bp.route("/category/create", methods=['GET', 'POST'])
 @login_required
 def create_category():
@@ -113,6 +139,7 @@ def create_category():
         flash('Category has been created!', 'success')
         return redirect(url_for('posts.list_posts'))
     return render_template('create_category.html', title='Create Category', form=form, navigation=navigation)
+
 
 @posts_bp.route("/category/<int:id>/update", methods=['GET', 'POST'])
 @login_required
@@ -127,6 +154,7 @@ def update_category(id):
     elif request.method == 'GET':
         form.name.data = category.name
     return render_template('update_category.html', title='Update Category', form=form, navigation=navigation)
+
 
 @posts_bp.route("/category/<int:id>/delete", methods=['POST'])
 @login_required

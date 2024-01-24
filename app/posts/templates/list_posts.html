@@ -2,12 +2,17 @@
 
 {% block content %}
   <h2>List of Posts</h2>
+  <div class="mb-3">
+    <a href="{{ url_for('posts.list_posts', sort='asc') }}" class="btn btn-primary btn-sm">Sort by Date (Ascending)</a>
+    <a href="{{ url_for('posts.list_posts', sort='desc') }}" class="btn btn-primary btn-sm">Sort by Date (Descending)</a>
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>
         <th>Title</th>
         <th>Category</th>
         <th>Tags</th>
+        <th>Created</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -17,6 +22,7 @@
           <td><a href="{{ url_for('posts.view_post', id=post.id) }}">{{ post.title }}</a></td>
           <td>{{ post.category.name }}</td>
           <td>{% for tag in post.tags %}{{ tag.name }}, {% endfor %}</td>
+          <td>{{ post.created.strftime('%m.%d.%y %H:%M') }}</td>
           <td>
             <a href="{{ url_for('posts.view_post', id=post.id) }}" class="btn btn-info btn-sm">View</a>
             <a href="{{ url_for('posts.update_post', id=post.id) }}" class="btn btn-warning btn-sm">Edit</a>
