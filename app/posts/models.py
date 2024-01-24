@@ -42,6 +42,7 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     #category = db.relationship('Category', backref=db.backref('posts', lazy=True))
     tags = relationship('Tag', secondary=post_tag_association, backref=db.backref('posts', lazy=True))
+    tags = relationship('Tag', secondary=post_tag_association, backref='posts')
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.created}')"

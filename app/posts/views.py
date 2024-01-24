@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 
 from . import posts_bp
 from .. import db
-from .models import Post, Category
+from .models import Post, Category, Tag
 from .forms import PostForm
 from .forms import CategoryForm
 
@@ -23,11 +23,23 @@ def create_post():
     form = PostForm()
     form.category.choices = [(category.id, category.name) for category in Category.query.all()]
     if form.validate_on_submit():
+        tags_input = form.tags.data
+        tags_list = [tag.strip()[1:] for tag in tags_input.split(',') if tag.strip().startswith('#')]
+        post_tags = []
+        for tag_name in tags_list:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+            post_tags.append(tag)
+
         post = Post(
             title=form.title.data,
             text=form.text.data,
             user_id=current_user.id,
-            category_id=form.category.data
+            category_id=form.category.data,
+            tags=post_tags
+
         )
         db.session.add(post)
         db.session.commit()

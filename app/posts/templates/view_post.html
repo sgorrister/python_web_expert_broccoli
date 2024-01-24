@@ -6,6 +6,8 @@
   <p>Created: {{ post.created }}</p>
   <p>Type: {{ post.type.value }}</p>
   <p>Enabled: {{ post.enabled }}</p>
+  <p>Tags: {% for tag in post.tags %}{{ tag.name }}, {% endfor %}</p>
+
   {% if current_user.is_authenticated and current_user.id == post.user_id %}
     <a href="{{ url_for('posts.update_post', id=post.id) }}">Edit</a>
 
