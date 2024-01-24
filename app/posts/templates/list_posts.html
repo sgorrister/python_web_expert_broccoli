@@ -1,38 +1,31 @@
-<!-- list_posts.html -->
-
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>List of Posts</h2>
-<table class="table">
+  <h2>List of Posts</h2>
+  <table class="table table-striped">
     <thead>
-    <tr>
+      <tr>
         <th>Title</th>
-        <th>Type</th>
-        <th>Enabled</th>
+        <th>Category</th>
+        <th>Tags</th>
         <th>Actions</th>
-    </tr>
+      </tr>
     </thead>
     <tbody>
-    {% for post in posts %}
-    <tr>
-        <td><a href="{{ url_for('posts.view_post', id=post.id) }}">{{ post.title }}</a></td>
-        <td>{{ post.type }}</td>
-        <td>{{ post.enabled }}</td>
-        <td>
-            <a href="{{ url_for('posts.view_post', id=post.id) }}" class="btn btn-info">View</a>
-            <a href="{{ url_for('posts.update_post', id=post.id) }}" class="btn btn-warning">Edit</a>
+      {% for post in posts %}
+        <tr>
+          <td><a href="{{ url_for('posts.view_post', id=post.id) }}">{{ post.title }}</a></td>
+          <td>{{ post.category.name }}</td>
+          <td>{% for tag in post.tags %}{{ tag.name }}, {% endfor %}</td>
+          <td>
+            <a href="{{ url_for('posts.view_post', id=post.id) }}" class="btn btn-info btn-sm">View</a>
+            <a href="{{ url_for('posts.update_post', id=post.id) }}" class="btn btn-warning btn-sm">Edit</a>
             <form method="POST" action="{{ url_for('posts.delete_post', id=post.id) }}" style="display:inline;">
-                <button type="submit" class="btn btn-danger"
-                        onclick="return confirm('Are you sure you want to delete this post?')">Delete
-                </button>
+              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
             </form>
-            <p>Category: {{ post.category.name }}</p>
-            <p>Tags: {% for tag in post.tags %}{{ tag.name }}, {% endfor %}</p>
-
-        </td>
-    </tr>
-    {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
     </tbody>
-</table>
+  </table>
 {% endblock %}
