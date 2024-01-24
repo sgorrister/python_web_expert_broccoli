@@ -3,13 +3,14 @@ from flask import url_for
 from flask_login import current_user
 from flask_testing import TestCase
 from .. import create_app, db
-from ..models import User
+from ..models import User, Todo
+
 
 class TestViews(TestCase):
     def create_app(self):
         app = create_app()
         app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF protection in testing
+        app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         return app
 
@@ -123,6 +124,85 @@ class TestViews(TestCase):
         self.assertIsNotNone(updated_user)
         self.assertEqual(updated_user.email, 'newemail@example.com')
         self.assertEqual(updated_user.about_me, 'new about me')
+
+
+    def test_add_todo(self):
+        response = self.client.get(url_for('todos.add_todo'))
+        self.assert200(response)
+        self.assert_template_used('add_todo.html')
+
+        data = {
+            'title': 'Test Todo',
+            'description': 'This is a test todo.'
+        }
+
+        response = self.client.post(url_for('todos.add_todo'), data=data, follow_redirects=True)
+        self.assert200(response)
+        self.assert_template_used('todos.html')
+        self.assertIn(b'Test Todo', response.data)
+
+
+    def test_view_todo(self):
+        todo = Todo(title='Test Todo', description='This is a test todo.')
+        db.session.add(todo)
+        db.session.commit()
+
+        response = self.client.get(url_for('todos.todo', todo_id=todo.id))
+        self.assert200(response)
+        self.assert_template_used('todo.html')
+        self.assertIn(b'Test Todo', response.data)
+        self.assertIn(b'This is a test todo.', response.data)
+
+
+    def test_delete_todo(self):
+        todo = Todo(title='Test Todo', description='This is a test todo.')
+        db.session.add(todo)
+        db.session.commit()
+
+        response = self.client.get(url_for('todos.delete_todo', todo_id=todo.id), follow_redirects=True)
+        self.assert200(response)
+        self.assert_template_used('todos.html')
+        self.assertNotIn(b'Test Todo', response.data)
+
+
+    def test_add_todo(self):
+        response = self.client.get(url_for('todos.add_todo'))
+        self.assert200(response)
+        self.assert_template_used('add_todo.html')
+
+        data = {
+            'title': 'Test Todo',
+            'description': 'This is a test todo.'
+        }
+
+        response = self.client.post(url_for('todos.add_todo'), data=data, follow_redirects=True)
+        self.assert200(response)
+        self.assert_template_used('todos.html')
+        self.assertIn(b'Test Todo', response.data)
+
+
+    def test_view_todo(self):
+        todo = Todo(title='Test Todo', description='This is a test todo.')
+        db.session.add(todo)
+        db.session.commit()
+
+        response = self.client.get(url_for('todos.todo', todo_id=todo.id))
+        self.assert200(response)
+        self.assert_template_used('todo.html')
+        self.assertIn(b'Test Todo', response.data)
+        self.assertIn(b'This is a test todo.', response.data)
+
+
+    def test_delete_todo(self):
+        todo = Todo(title='Test Todo', description='This is a test todo.')
+        db.session.add(todo)
+        db.session.commit()
+
+        response = self.client.get(url_for('todos.delete_todo', todo_id=todo.id), follow_redirects=True)
+        self.assert200(response)
+        self.assert_template_used('todos.html')
+        self.assertNotIn(b'Test Todo', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()
