@@ -1,14 +1,15 @@
 import unittest
 from flask import url_for
+from flask_login import current_user
 from flask_testing import TestCase
 from .. import create_app, db
 from ..models import User
 
-class TestAuthenticationViews(TestCase):
+class TestViews(TestCase):
     def create_app(self):
         app = create_app()
         app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF protection in testing
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         return app
 
@@ -19,76 +20,109 @@ class TestAuthenticationViews(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def register_user(self, email, password):
-        response = self.client.post(
-            url_for('accounting.register'),
-            data=dict(email=email, password=password),
-            follow_redirects=True
-        )
-        return response
+    def test_home_page(self):
+        response = self.client.get(url_for('portfolio.home'))
+        self.assert200(response)
+        self.assert_template_used('page1.html')
 
-    def login_user(self, email, password):
-        response = self.client.post(
-            url_for('accounting.login'),
-            data=dict(email=email, password=password),
-            follow_redirects=True
-        )
-        return response
-
-    def logout_user(self):
-        response = self.client.get(url_for('accounting.logout'), follow_redirects=True)
-        return response
-
-    def test_register_and_login(self):
-        # Register user
-        response = self.register_user('testuser@example.com', 'password')
+    def test_registration_page(self):
+        response = self.client.get(url_for('accounting.register'))
         self.assert200(response)
         self.assert_template_used('register.html')
 
-        # Login user
-        response = self.login_user('testuser@example.com', 'password')
-        self.assert200(response)
-        self.assert_template_used('login.html')  # Replace 'dashboard.html' with the actual template for the user's dashboard
-
-    def test_edit_profile(self):
-        # Register user
-        response = self.register_user('testuser@example.com', 'password')
-        self.assert200(response)
-        self.assert_template_used('register.html')
-
-        # Login user
-        response = self.login_user('testuser@example.com', 'password')
+    def test_login_page(self):
+        response = self.client.get(url_for('accounting.login'))
         self.assert200(response)
         self.assert_template_used('login.html')
 
-        # Edit user profile
-        new_email = 'newemail@example.com'
+    def test_cookies_info_page(self):
+        response = self.client.get(url_for('cookies.info', username='testuser'))
+        self.assert200(response)
+        self.assert_template_used('info.html')
+
+    def test_feedback_page(self):
+        response = self.client.get(url_for('feedback.feedback'))
+        self.assert200(response)
+        self.assert_template_used('feedback.html')
+
+    def test_portfolio_page(self):
+        response = self.client.get(url_for('portfolio.page1'))
+        self.assert200(response)
+        self.assert_template_used('page1.html')
+
+    def test_list_posts_page(self):
+        response = self.client.get(url_for('posts.list_posts'))
+        self.assert200(response)
+        self.assert_template_used('list_posts.html')
+
+    def test_registration(self):
         response = self.client.post(
-            url_for('accounting.account'),  # Оновлено тут
-            data=dict(email=new_email),
+            url_for('accounting.register'),
+            data={'username': 'testuser', 'email': 'testuser@example.com', 'password': 'testpassword',
+                  'confirm_password': 'testpassword'},
             follow_redirects=True
         )
         self.assert200(response)
-        self.assert_template_used('login.html')  # Змінено тут
+        self.assert_template_used('login.html')
+        self.assertTrue(User.query.filter_by(username='testuser').first())
 
-        # Verify that user with the new email exists in the database
-        user = User.query.filter_by(email=new_email).first()
-        self.assertIsNotNone(user)
-    # def test_logout(self):
-    #     # Register user
-    #     response = self.register_user('testuser@example.com', 'password')
-    #     self.assert200(response)
-    #     self.assert_template_used('login.html')
-    #
-    #     # Login user
-    #     response = self.login_user('testuser@example.com', 'password')
-    #     self.assert200(response)
-    #     self.assert_template_used('dashboard.html')  # Replace 'dashboard.html' with the actual template for the user's dashboard
-    #
-    #     # Logout user
-    #     response = self.logout_user()
-    #     self.assert200(response)
-    #     self.assert_template_used('home.html')  # Replace 'home.html' with the actual template for the home page
+    def test_login(self):
+        user = User(username='testuser', email='testuser@example.com')
+        user.set_password('testpassword')
+        db.session.add(user)
+        db.session.commit()
+
+        response = self.client.post(
+            url_for('accounting.login'),
+            data={'email': 'testuser@example.com', 'password': 'testpassword'},
+            follow_redirects=True
+        )
+        self.assert200(response)
+        self.assert_template_used('page1.html')
+        self.assertTrue(user.is_authenticated)
+
+    def test_logout(self):
+        # Assuming you have a test user in the database
+        user = User(username='testuser', email='testuser@example.com')
+        user.set_password('testpassword')
+        db.session.add(user)
+        db.session.commit()
+
+        self.client.post(
+            url_for('accounting.login'),
+            data={'email': 'testuser@example.com', 'password': 'testpassword'},
+            follow_redirects=True
+        )
+
+        response = self.client.get(url_for('accounting.logout'), follow_redirects=True)
+
+        self.assert200(response)
+        self.assert_template_used('page1.html')
+        self.assertFalse(current_user.is_authenticated)
+
+    def test_update_profile(self):
+        user = User(username='testuser', email='testuser@example.com')
+        user.set_password('testpassword')
+        db.session.add(user)
+        db.session.commit()
+
+        self.client.post(
+            url_for('accounting.login'),
+            data={'email': 'testuser@example.com', 'password': 'testpassword'},
+            follow_redirects=True
+        )
+
+        response = self.client.post(
+            url_for('accounting.account'),
+            data={'username': 'newusername', 'email': 'newemail@example.com', 'about_me': 'new about me'},
+            follow_redirects=True
+        )
+        self.assert200(response)
+        self.assert_template_used('account.html')
+        updated_user = User.query.filter_by(username='newusername').first()
+        self.assertIsNotNone(updated_user)
+        self.assertEqual(updated_user.email, 'newemail@example.com')
+        self.assertEqual(updated_user.about_me, 'new about me')
 
 if __name__ == '__main__':
     unittest.main()
