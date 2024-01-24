@@ -5,15 +5,8 @@ from flask import request, make_response, redirect, url_for, flash, render_templ
 
 from app.cookies import cookies_bp
 
-navigation = {
-    'Про мене': 'portfolio.home',
-    'Проєкти': 'portfolio.page2',
-    'Контакти': 'portfolio.page3',
-    'Skills': 'portfolio.display_skills',
-    'todo': 'todos.todos',
-    'all users': 'accounting.users',
-    'feedback': 'feedback.feedback'
-}
+from config import navigation
+
 
 @cookies_bp.route('/info/<username>', methods=['GET', 'POST'])
 def info(username):

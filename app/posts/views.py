@@ -7,16 +7,7 @@ from .. import db
 from .models import Post, Category, Tag
 from .forms import PostForm
 from .forms import CategoryForm
-
-navigation = {
-    'Про мене': 'portfolio.home',
-    'Проєкти': 'portfolio.page2',
-    'Контакти': 'portfolio.page3',
-    'Skills': 'portfolio.display_skills',
-    'todo': 'todos.todos',
-    'all users': 'accounting.users',
-    'feedback': 'feedback.feedback'
-}
+from config import navigation
 
 
 @posts_bp.route("/post/create", methods=['GET', 'POST'])
@@ -54,7 +45,7 @@ def create_post():
 def list_posts():
     posts = Post.query.all()
     sort_order = request.args.get('sort', 'desc')
-    categories = Category.query.all()  # Added to pass categories to the template
+    categories = Category.query.all()
     if sort_order == 'asc':
         posts = Post.query.options(joinedload(Post.category), joinedload(Post.tags)).order_by(Post.created)
     else:
@@ -73,8 +64,6 @@ def view_post(id):
 @login_required
 def update_post(id):
     post = Post.query.options(joinedload(Post.category), joinedload(Post.tags)).get_or_404(id)
-
-    # Check if the current user is the author of the post
     if current_user.id != post.user_id:
         flash('You are not authorized to edit this post.', 'danger')
         return redirect(url_for('posts.list_posts'))
@@ -87,7 +76,6 @@ def update_post(id):
         post.text = form.text.data
         post.category_id = form.category.data
 
-        # Оновлення тегів
         tags_input = form.tags.data
         tags_list = [tag.strip()[1:] for tag in tags_input.split(',') if tag.strip().startswith('#')]
         post_tags = []
@@ -98,7 +86,7 @@ def update_post(id):
                 db.session.add(tag)
             post_tags.append(tag)
 
-        post.tags = post_tags  # Оновлення тегів
+        post.tags = post_tags
 
         db.session.commit()
         flash('Post has been updated!', 'success')
@@ -107,17 +95,16 @@ def update_post(id):
         form.title.data = post.title
         form.text.data = post.text
         form.category.data = post.category_id
-        # Задаємо теги для виведення в формі
         form.tags.data = ', '.join(['#' + tag.name for tag in post.tags])
 
     return render_template('update_post.html', title='Update Post', form=form, navigation=navigation, post=post)
+
 
 @posts_bp.route("/post/<int:id>/delete", methods=['POST'])
 @login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
 
-    # Check if the current user is the author of the post
     if current_user.id != post.user_id:
         flash('You are not authorized to delete this post.', 'danger')
         return redirect(url_for('posts.list_posts'))

@@ -5,15 +5,8 @@ from .forms import TodoForm
 from .. import db
 from ..models import Todo
 
-navigation = {
-    'Про мене': 'portfolio.home',
-    'Проєкти': 'portfolio.page2',
-    'Контакти': 'portfolio.page3',
-    'Skills': 'portfolio.display_skills',
-    'todo': 'todos.todos',
-    'all users': 'accounting.users',
-    'feedback': 'feedback.feedback'
-}
+from config import navigation
+
 
 
 # @app.route('/login', methods=['GET', 'POST'])

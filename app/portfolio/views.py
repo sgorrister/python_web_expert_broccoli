@@ -5,16 +5,7 @@ from flask import render_template, flash, redirect, url_for, request
 
 from . import portfolio_bp
 
-my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
-navigation = {
-    'Про мене': 'portfolio.home',
-    'Проєкти': 'portfolio.page2',
-    'Контакти': 'portfolio.page3',
-    'Skills': 'portfolio.display_skills',
-    'todo': 'todos.todos',
-    'all users': 'accounting.users',
-    'feedback': 'feedback.feedback'
-}
+from config import navigation
 
 
 @portfolio_bp.route('/')

@@ -12,17 +12,10 @@ from . import accounting_bp
 from .. import db
 from ..accounting.forms import RegistrationForm, LoginForm, UpdateAccountForm, ResetPasswordForm
 from ..models import User
+from config import navigation
 
 my_skills = ['Python', 'Flask', 'HTML', 'CSS', 'Bootstrap', 'JavaScript', 'SQL']
-navigation = {
-    'Про мене': 'portfolio.home',
-    'Проєкти': 'portfolio.page2',
-    'Контакти': 'portfolio.page3',
-    'Skills': 'portfolio.display_skills',
-    'todo': 'todos.todos',
-    'all users': 'accounting.users',
-    'feedback': 'feedback.feedback'
-}
+
 
 
 @accounting_bp.route("/logout", methods=['GET', 'POST'])
