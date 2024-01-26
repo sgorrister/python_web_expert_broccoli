@@ -18,6 +18,8 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = 'accounting.login'
+    from .api import api_bp, jwt
+    jwt.init_app(app)
 
     with app.app_context():
         from app.api import api_bp
