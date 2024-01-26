@@ -37,7 +37,7 @@ class Post(db.Model):
     image = db.Column(db.String(255), default='postdefault.jpg')
     created = db.Column(db.DateTime, default=datetime.utcnow)
     type = db.Column(Enum(EnumPriority), default='low')
-    enabled = db.Column(db.Boolean, default=True)
+    enabled = db.Column(db.Boolean, default=True)  # Corrected from 'enable'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     #category = db.relationship('Category', backref=db.backref('posts', lazy=True))
